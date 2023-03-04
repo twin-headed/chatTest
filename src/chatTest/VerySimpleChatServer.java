@@ -43,10 +43,10 @@ public class VerySimpleChatServer {
 		new VerySimpleChatServer().go();
 	}
 	
-	public void go() {	// 8081 포트를 열고 클라이언트 요청을 계속 대기
+	public void go() {	// 8080 포트를 열고 클라이언트 요청을 계속 대기
 		clientOutputStreams = new ArrayList();
 		try {
-			ServerSocket serverSock = new ServerSocket(8081);
+			ServerSocket serverSock = new ServerSocket(8080);
 			
 			while(true) {
 				Socket clientSocket = serverSock.accept();
