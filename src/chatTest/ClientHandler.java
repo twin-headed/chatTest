@@ -24,7 +24,6 @@ public class ClientHandler implements Runnable {
 			this.clientUsername = bufferedReader.readLine();
 			clientHandlers.add(this);
 			broadcastMessage("CONNECTED");
-			broadcastMessage(clientUsername);
 			broadcastMessage(clientUsername + " 님이 입장하셨습니다.");
 		}catch(IOException e) {
 			closeEverything(socket, bufferedReader, bufferedWriter);
