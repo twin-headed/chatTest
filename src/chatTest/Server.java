@@ -26,7 +26,6 @@ public class Server {
 				Socket clientSocket = serverSocket.accept();
 				System.out.println("클라이언트 입장");
 				ClientHandler clientHandler = new ClientHandler(clientSocket);
-				
 				Thread thread = new Thread(clientHandler);
 				thread.start();
 			}
