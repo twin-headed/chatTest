@@ -24,7 +24,7 @@ public class Server {
 		try {
 			while(!serverSocket.isClosed()) {
 				Socket clientSocket = serverSocket.accept();
-				System.out.println("클라이언트 입장ㄹ");
+				System.out.println("클라이언트 입장");
 				ClientHandler clientHandler = new ClientHandler(clientSocket);
 				Thread thread = new Thread(clientHandler);
 				thread.start();
