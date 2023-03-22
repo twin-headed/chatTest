@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.Socket;
@@ -59,6 +60,12 @@ public class ClientHandler implements Runnable {
 			            HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // URL 연결 객체 생성
 			            conn.setRequestMethod("POST"); // 요청 방식 설정
 			            conn.setDoOutput(true);	// outputStream으로 POST데이터를 요청설정
+			            conn.setRequestProperty("Content-Type", "text/plain");
+			            String data = messageToSend;
+			            OutputStream os = conn.getOutputStream();
+			            os.write(data.getBytes());
+			            os.flush();
+			            os.close();
 
 			            int responseCode = conn.getResponseCode(); // 서버 응답 코드 확인
 			            if (responseCode != HttpURLConnection.HTTP_OK) { // 요청이 성공한 경우
