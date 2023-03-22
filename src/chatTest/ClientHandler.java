@@ -5,7 +5,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class ClientHandler implements Runnable {
@@ -24,8 +26,7 @@ public class ClientHandler implements Runnable {
 			this.clientUsername = bufferedReader.readLine();
 			System.out.println("clientUsername: " + clientUsername);
 			clientHandlers.add(this);
-			broadcastMessage("CONNECTED");
-			broadcastMessage(clientUsername + " 님이 입장하셨습니다.");
+			broadcastMessage("[CONNECTED] " + clientUsername + " 님이 입장하셨습니다.");
 		}catch(IOException e) {
 			closeEverything(socket, bufferedReader, bufferedWriter);
 		}
@@ -53,9 +54,19 @@ public class ClientHandler implements Runnable {
 					clientHandler.bufferedWriter.write(messageToSend);
 					clientHandler.bufferedWriter.newLine();
 					clientHandler.bufferedWriter.flush();
-					/*
-					 * 
-					 */
+					try {
+			            URL url = new URL("localhost:8081/message"); // REST API 요청을 보낼 URL
+			            HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // URL 연결 객체 생성
+			            conn.setRequestMethod("POST"); // 요청 방식 설정
+			            conn.setDoOutput(true);	// outputStream으로 POST데이터를 요청설정
+
+			            int responseCode = conn.getResponseCode(); // 서버 응답 코드 확인
+			            if (responseCode != HttpURLConnection.HTTP_OK) { // 요청이 성공한 경우
+			            	System.out.println("REST API 요청에 실패했습니다.");
+			            } 
+			        } catch (Exception e) {
+			            System.out.println("예외가 발생했습니다. " + e.getMessage());
+			        }
 				}
 			} catch (IOException e) {
 				closeEverything(socket, bufferedReader, bufferedWriter);
@@ -65,7 +76,7 @@ public class ClientHandler implements Runnable {
 	
 	public void removeClientHandler() {
 		clientHandlers.remove(this);
-		broadcastMessage(clientUsername + "님이 나갔습니다.");
+		broadcastMessage("[DISCONNECTED] " + clientUsername + "님이 나갔습니다.");
 	}
 	
 	private void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
