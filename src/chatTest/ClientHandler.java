@@ -56,7 +56,7 @@ public class ClientHandler implements Runnable {
 					clientHandler.bufferedWriter.newLine();
 					clientHandler.bufferedWriter.flush();
 					try {
-			            URL url = new URL("localhost:8080/message"); // REST API 요청을 보낼 URL
+			            URL url = new URL("http://localhost:8080/message"); // REST API 요청을 보낼 URL
 			            HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // URL 연결 객체 생성
 			            conn.setRequestMethod("POST"); // 요청 방식 설정
 			            conn.setDoOutput(true);	// outputStream으로 POST데이터를 요청설정
