@@ -27,7 +27,8 @@ public class ClientHandler implements Runnable {
 			this.clientUsername = bufferedReader.readLine();
 			System.out.println("clientUsername: " + clientUsername);
 			clientHandlers.add(this);
-			broadcastMessage("[CONNECTED] " + clientUsername + " 님이 입장하셨습니다.");
+			broadcastClients(clientHandlers);
+			broadcastMessage("[CONNECTED]:" + clientUsername + " 님이 입장하셨습니다.");
 		}catch(IOException e) {
 			closeEverything(socket, bufferedReader, bufferedWriter);
 		}
@@ -36,7 +37,6 @@ public class ClientHandler implements Runnable {
 	@Override
 	public void run() {
 		String messageFromClient;
-		
 		while(socket.isConnected()) {
 			try {
 				messageFromClient = bufferedReader.readLine();
@@ -48,32 +48,14 @@ public class ClientHandler implements Runnable {
 		}
 	}
 
-	private void broadcastMessage(String messageToSend) {
+	public void broadcastMessage(String messageToSend) {
 		for (ClientHandler clientHandler : clientHandlers) {
 			try {
 				if(!clientUsername.equals(clientHandler.clientUsername)) {
+					
 					clientHandler.bufferedWriter.write(messageToSend);
 					clientHandler.bufferedWriter.newLine();
 					clientHandler.bufferedWriter.flush();
-					try {
-			            URL url = new URL("http://localhost:8081/message"); // REST API 요청을 보낼 URL
-			            HttpURLConnection conn = (HttpURLConnection) url.openConnection(); // URL 연결 객체 생성
-			            conn.setRequestMethod("POST"); // 요청 방식 설정
-			            conn.setDoOutput(true);	// outputStream으로 POST데이터를 요청설정
-			            conn.setRequestProperty("Content-Type", "text/plain");
-			            String data = messageToSend;
-			            OutputStream os = conn.getOutputStream();
-			            os.write(data.getBytes());
-			            os.flush();
-			            os.close();
-
-			            int responseCode = conn.getResponseCode(); // 서버 응답 코드 확인
-			            if (responseCode != HttpURLConnection.HTTP_OK) { // 요청이 성공한 경우
-			            	System.out.println("REST API 요청에 실패했습니다.");
-			            } 
-			        } catch (Exception e) {
-			            System.out.println("예외가 발생했습니다. " + e.getMessage());
-			        }
 				}
 			} catch (IOException e) {
 				closeEverything(socket, bufferedReader, bufferedWriter);
@@ -81,12 +63,37 @@ public class ClientHandler implements Runnable {
 		}
 	}
 	
-	public void removeClientHandler() {
-		clientHandlers.remove(this);
-		broadcastMessage("[DISCONNECTED] " + clientUsername + "님이 나갔습니다.");
+	public void broadcastClients(ArrayList<ClientHandler> clientHandlers) {
+		
+		try {
+			String clients = "[CLIENTS]:";
+			
+			if(clientHandlers.size() > 0) {
+				for (int i = 0; i < clientHandlers.size(); i++) {
+					clients += clientHandlers.get(i).clientUsername;
+				    if (i < clientHandlers.size() - 1) {
+				    	clients += ",";
+				    }
+				}
+			}else {
+				clients += clientUsername;
+			}
+			
+			this.bufferedWriter.write(clients);
+			this.bufferedWriter.newLine();
+			this.bufferedWriter.flush();
+			
+		} catch (IOException e) {
+			closeEverything(socket, bufferedReader, bufferedWriter);
+		}
 	}
 	
-	private void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
+	public void removeClientHandler() {
+		clientHandlers.remove(this);
+		broadcastMessage("[DISCONNECTED]:" + clientUsername + " 님이 나갔습니다.");
+	}
+	
+	public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
 		removeClientHandler();
 		try {
 			if(bufferedReader != null) {
