@@ -40,6 +40,7 @@ public class ClientHandler implements Runnable {
 		while(socket.isConnected()) {
 			try {
 				messageFromClient = bufferedReader.readLine();
+				messageFromClient = this.clientUsername += " :".concat(messageFromClient);
 				broadcastMessage(messageFromClient);
 			} catch(IOException e) {
 				closeEverything(socket, bufferedReader, bufferedWriter);
@@ -52,7 +53,6 @@ public class ClientHandler implements Runnable {
 		for (ClientHandler clientHandler : clientHandlers) {
 			try {
 				if(!clientUsername.equals(clientHandler.clientUsername)) {
-					messageToSend = this.clientUsername += ":".concat(messageToSend);
 					clientHandler.bufferedWriter.write(messageToSend);
 					clientHandler.bufferedWriter.newLine();
 					clientHandler.bufferedWriter.flush();
@@ -89,8 +89,8 @@ public class ClientHandler implements Runnable {
 	}
 	
 	public void removeClientHandler() {
-		clientHandlers.remove(this);
 		broadcastMessage("[DISCONNECTED]:" + clientUsername + " 님이 나갔습니다.");
+		clientHandlers.remove(this);
 	}
 	
 	public void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
