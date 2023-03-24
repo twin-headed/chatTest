@@ -40,7 +40,10 @@ public class ClientHandler implements Runnable {
 		while(socket.isConnected()) {
 			try {
 				messageFromClient = bufferedReader.readLine();
-				messageFromClient = this.clientUsername += " :".concat(messageFromClient);
+				messageFromClient = new StringBuilder(this.clientUsername)
+			                        .append(" : ")
+			                        .append(messageFromClient)
+			                        .toString();
 				broadcastMessage(messageFromClient);
 			} catch(IOException e) {
 				closeEverything(socket, bufferedReader, bufferedWriter);
