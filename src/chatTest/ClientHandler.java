@@ -52,7 +52,7 @@ public class ClientHandler implements Runnable {
 		for (ClientHandler clientHandler : clientHandlers) {
 			try {
 				if(!clientUsername.equals(clientHandler.clientUsername)) {
-					
+					this.clientUsername += ":".concat(messageToSend);
 					clientHandler.bufferedWriter.write(messageToSend);
 					clientHandler.bufferedWriter.newLine();
 					clientHandler.bufferedWriter.flush();
